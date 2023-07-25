@@ -20,15 +20,15 @@ type Photo struct {
 
 type Photos []Photo
 
-type PhotoAlbumPath string //相册相对路径
+type PhotoAlbumPath string //相册相对路径可能是(.)表示一级目录
 
-// PhotoAlbum 主目录下一个目录视为一个相册
+// PhotoAlbum 当前目录存在yaml则视为一个相册集
 type PhotoAlbum struct {
-	Title        string
-	Author       string
-	CreatedAt    dateTime.DateTime
-	Descriptions string
-	ShortUrl     string //快捷URL
+	Title        string            `yaml:"title"`
+	Author       string            `yaml:"author"`
+	CreatedAt    dateTime.DateTime `yaml:"createdAt"`
+	Descriptions string            `yaml:"descriptions"`
+	ShortUrl     string            //快捷URL
 	Path         PhotoAlbumPath
 	Photos       Photos
 }

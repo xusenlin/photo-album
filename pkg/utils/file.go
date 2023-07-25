@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func IsDir(name string) bool {
@@ -13,7 +15,12 @@ func IsDir(name string) bool {
 	}
 	return false
 }
-
+func IsYamlFile(fileInfo os.FileInfo) bool {
+	// 获取文件扩展名
+	ext := filepath.Ext(fileInfo.Name())
+	// 判断扩展名是否为 ".yaml" 或 ".yml"
+	return strings.EqualFold(ext, ".yaml") || strings.EqualFold(ext, ".yml")
+}
 
 func IsFile(filename string) bool {
 	existed := true
@@ -33,10 +40,10 @@ func MakeDir(dir string) error {
 func RemoveDir(dir string) error {
 
 	if !IsDir(dir) {
-		return  errors.New("cannot delete without directory")
+		return errors.New("cannot delete without directory")
 	}
 
-	return  os.RemoveAll(dir)
+	return os.RemoveAll(dir)
 }
 
 func CopyFile(src, dst string) (int64, error) {

@@ -3,12 +3,21 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"path/filepath"
 	"photoAlbum/models"
 )
 
 func main() {
 
-	err := models.InitPhotoAlbum("")
+	path, err := filepath.Abs("./PhotoAlbum")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = models.InitPhotoAlbum(path)
+
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -20,5 +29,11 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Listen(":3000")
+	err = app.Listen(":3000")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 }
