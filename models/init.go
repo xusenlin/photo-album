@@ -114,7 +114,7 @@ func parserPhotos(path string) (Photos, error) {
 		if !file.IsDir() {
 			ext := strings.ToLower(filepath.Ext(file.Name()))
 			// 检查文件是否为图片格式
-			if ext == ".jpg" || ext == ".jpeg" || ext == ".png" {
+			if ext == ".jpg" || ext == ".jpeg" {
 				// 解析图片元数据
 				photo, err := parsePhotoData(path, file)
 				if err != nil {
