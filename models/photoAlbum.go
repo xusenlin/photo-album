@@ -1,22 +1,27 @@
 package models
 
 import (
+	"fmt"
+	"github.com/rwcarlsen/goexif/exif"
+	"os"
 	"photoAlbum/pkg/dateTime"
+	"time"
 )
 
 type Photo struct {
-	Size         int    // 图片大小（以字节为单位）
-	Name         string // 图片名称
-	Format       string // 图片格式（例如：JPEG、PNG等）
+	Size         float64 // 图片大小（以M为单位）
+	Name         string  // 图片名称
+	Format       string  // 图片格式（例如：JPEG、PNG等）
 	Height       int
 	Width        int
-	ShotTime     dateTime.DateTime // 拍摄时间
-	CameraModel  string            // 相机型号
-	ExposureTime string            // 曝光时间  快门速度
-	Aperture     string            // 光圈值
-	ISO          int               // ISO感光度
-	FocalLength  string            // 焦距
-	Error        error             //解析错误的信息
+	ShotTime     time.Time // 拍摄时间
+	Camera       string
+	CameraModel  string // 相机型号
+	ExposureTime string // 曝光时间  快门速度
+	Aperture     string // 光圈值
+	ISO          string // ISO感光度
+	FocalLength  string // 焦距毫米
+	Error        error  //解析错误的信息
 }
 
 type Photos []Photo
@@ -44,3 +49,49 @@ func (a PhotoAlbums) Less(i, j int) bool {
 }
 
 func (a PhotoAlbums) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+
+func (p *Photo) ParseExifByPath(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		p.Error = err
+		return
+	}
+	defer file.Close()
+
+	x, err := exif.Decode(file)
+	if err != nil {
+		p.Error = err
+		return
+	}
+
+	if t, err := x.DateTime(); err == nil {
+		p.ShotTime = t
+	}
+	if cam, err := x.Get(exif.Make); err == nil {
+		p.Camera = cam.String()
+	}
+	if camModel, err := x.Get(exif.Model); err == nil {
+		p.CameraModel = camModel.String()
+	}
+	if exposure, err := x.Get(exif.ExposureTime); err == nil {
+		numerator, denominator, _ := exposure.Rat2(0)
+		p.ExposureTime = fmt.Sprintf("1/%v", denominator/numerator)
+
+	}
+
+	if aperture, err := x.Get(exif.FNumber); err == nil {
+		numerator, denominator, _ := aperture.Rat2(0)
+		p.Aperture = fmt.Sprintf("%.1f", float64(numerator)/float64(denominator))
+
+	}
+
+	if iso, err := x.Get(exif.ISOSpeedRatings); err == nil {
+		p.ISO = iso.String()
+	}
+
+	if focalLength, err := x.Get(exif.FocalLength); err == nil {
+		numerator, denominator, _ := focalLength.Rat2(0)
+		p.FocalLength = fmt.Sprintf("%.0f", float64(numerator)/float64(denominator))
+	}
+	//fmt.Println(p)
+}

@@ -4,14 +4,15 @@ import (
 	"time"
 )
 
-const dateTimeFormat = "2006-01-02"
+const DateFormat = "2006-01-02"
+const DateTimeFormat = "2006-01-02 15:04:05"
 
 type DateTime struct {
 	time.Time
 }
 
 func (ct *DateTime) MarshalYAML() (interface{}, error) {
-	return ct.Time.Format(dateTimeFormat), nil
+	return ct.Time.Format(DateFormat), nil
 }
 
 func (ct *DateTime) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -21,7 +22,7 @@ func (ct *DateTime) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
-	parsedTime, err := time.Parse(dateTimeFormat, formattedTime)
+	parsedTime, err := time.Parse(DateFormat, formattedTime)
 	if err != nil {
 		return err
 	}

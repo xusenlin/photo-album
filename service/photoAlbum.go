@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/disintegration/imaging"
 	"gopkg.in/yaml.v3"
 	"image"
@@ -60,7 +61,6 @@ func readPhotoAlbum(absolutePath string) (models.PhotoAlbums, error) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			//比较耗时
 			pa := parserPhotoAlbum(absolutePath, path)
 			resultCh <- &pa
 		}()
@@ -105,23 +105,22 @@ func parserPhotoAlbum(root, path string) models.PhotoAlbum {
 	return pa
 }
 
-func parserPhotos(path string) (models.Photos, error) {
+func parserPhotos(dir string) (models.Photos, error) {
 	var photos models.Photos
 
-	files, err := ioutil.ReadDir(path)
+	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return photos, err
 	}
 	for _, file := range files {
 		if !file.IsDir() {
-			ext := strings.ToLower(filepath.Ext(file.Name()))
-			// 检查文件是否为图片格式,并且排除封面
-			if strings.HasPrefix(file.Name(), "cover_") {
+			if strings.Contains(file.Name(), "_COVER") {
 				continue
 			}
+			ext := strings.ToLower(filepath.Ext(file.Name()))
 			if ext == ".jpg" || ext == ".jpeg" {
 				// 解析图片元数据
-				photo := parsePhotoData(path, file)
+				photo := parsePhotoData(dir, file)
 				photos = append(photos, photo)
 			}
 		}
@@ -144,41 +143,39 @@ func parserYaml(path string) (models.PhotoAlbum, error) {
 }
 
 // 解析图片元数据
-func parsePhotoData(path string, file fs.FileInfo) models.Photo {
+func parsePhotoData(dir string, file fs.FileInfo) models.Photo {
 
 	photo := models.Photo{}
-	coverName := "cover_" + file.Name()
-	filePath := filepath.Join(path, file.Name())
+
+	filePath := filepath.Join(dir, file.Name())
+	coverPath := buildCoverPath(filePath)
 
 	img, err := imaging.Open(filePath)
 	if err != nil {
 		photo.Error = err
 		return photo
 	}
-	coverFile := filepath.Join(path, coverName)
 
-	err = buildPhotoCover(img, coverFile)
+	photo.Width = img.Bounds().Dx()
+	photo.Height = img.Bounds().Dy()
+	photo.Size = float64(file.Size()) / (1024 * 1024)
+	photo.Name = file.Name()
+	photo.Format = filepath.Ext(file.Name())
+
+	photo.ParseExifByPath(filePath)
+
+	err = buildPhotoCover(img, coverPath)
 	if err != nil {
 		photo.Error = err
 		return photo
 	}
 
-	// 在这里进行图片元数据的解析
-	// 使用标准库或第三方库来解析图片元数据，并将其存储在一个 Photo 对象中
-
-	// 示例：创建一个空的 Photo 对象
-
-	// 示例：设置一些示意性的数据
-	//photo.Name = filepath.Base(filePath)
-	//photo.Format = strings.TrimPrefix(filepath.Ext(filePath), ".")
-	//photo.ShotTime = time.Now()
-
 	return photo
 }
 
-func buildPhotoCover(img image.Image, coverFile string) error {
-	if utils.IsFile(coverFile) { //有封面了
-		img, err := imaging.Open(coverFile)
+func buildPhotoCover(img image.Image, coverPath string) error {
+	if utils.IsFile(coverPath) { //有封面了
+		img, err := imaging.Open(coverPath)
 		if err != nil {
 			return err
 		}
@@ -187,9 +184,19 @@ func buildPhotoCover(img image.Image, coverFile string) error {
 		}
 	}
 	cover := imaging.Resize(img, 0, global.Config.CoverHeight, imaging.NearestNeighbor)
-	err := imaging.Save(cover, coverFile)
+	err := imaging.Save(cover, coverPath)
 	if err != nil {
 		return err
 	}
+	fmt.Println(coverPath)
 	return nil
+}
+
+func buildCoverPath(path string) string {
+	dir := filepath.Dir(path)
+	fileName := filepath.Base(path)
+	fileExt := filepath.Ext(fileName)
+	fileNameWithoutExt := strings.TrimSuffix(fileName, fileExt)
+	coverFileName := fileNameWithoutExt + "_COVER" + fileExt
+	return filepath.Join(dir, coverFileName)
 }

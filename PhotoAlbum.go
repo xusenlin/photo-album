@@ -22,10 +22,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println(global.PhotoAlbumList)
-
 	app := fiber.New()
+	app.Static("/photoAlbum", global.Config.PhotoAlbumAbsolutePath)
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
