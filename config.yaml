@@ -1,0 +1,6 @@
+#程序启动的端口号
+listenPort: 3001
+#生成的封面高度值，宽度自动。
+coverHeight: 650
+#相册的目录地址，相对于当前执行文件
+photoAlbumPath: ./PhotoAlbum

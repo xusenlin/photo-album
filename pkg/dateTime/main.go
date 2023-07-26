@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const dateTimeFormat = "2006-01-02 15:04:05"
+const dateTimeFormat = "2006-01-02"
 
 type DateTime struct {
 	time.Time

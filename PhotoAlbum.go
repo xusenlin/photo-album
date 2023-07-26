@@ -3,25 +3,27 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"path/filepath"
-	"photoAlbum/models"
+	"photoAlbum/config"
+	"photoAlbum/global"
+	"photoAlbum/service"
 )
 
 func main() {
+	var err error
+	global.Config, err = config.New("./config.yaml")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	path, err := filepath.Abs("./PhotoAlbum")
+	global.PhotoAlbumList, global.PhotoAlbumMap, err = service.InitPhotoAlbum(global.Config.PhotoAlbumAbsolutePath)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	err = models.InitPhotoAlbum(path)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	fmt.Println(global.PhotoAlbumList)
 
 	app := fiber.New()
 
@@ -29,7 +31,7 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	err = app.Listen(":3000")
+	err = app.Listen(":" + global.Config.ListenPort)
 
 	if err != nil {
 		fmt.Println(err)
