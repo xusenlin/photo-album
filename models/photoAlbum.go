@@ -3,15 +3,19 @@ package models
 import (
 	"fmt"
 	"github.com/rwcarlsen/goexif/exif"
+	"math"
 	"os"
 	"photoAlbum/pkg/dateTime"
+	"photoAlbum/pkg/utils"
+	"strings"
 	"time"
 )
 
 type Photo struct {
-	Size         float64 // 图片大小（以M为单位）
-	Name         string  // 图片名称
-	Format       string  // 图片格式（例如：JPEG、PNG等）
+	Size         string // 图片大小（以M为单位）
+	Name         string // 图片名称
+	Format       string // 图片格式（例如：JPEG、PNG等）
+	Path         PhotoAlbumPath
 	Height       int
 	Width        int
 	ShotTime     time.Time // 拍摄时间
@@ -34,13 +38,32 @@ type PhotoAlbum struct {
 	Author       string            `yaml:"author"`
 	CreatedAt    dateTime.DateTime `yaml:"createdAt"`
 	Descriptions string            `yaml:"descriptions"`
-	ShortUrl     string            //快捷URL
 	Path         PhotoAlbumPath
 	Photos       Photos
+	Count        int
 	Error        error //解析错误的信息
 }
 
 type PhotoAlbums []PhotoAlbum
+
+func (a PhotoAlbums) Pagination(pageNum, pageSize int) (PhotoAlbums, int, int, []int) {
+
+	l := len(a)
+	totalPages := int(math.Ceil(float64(l) / float64(pageSize)))
+
+	if pageNum > totalPages {
+		pageNum = totalPages
+	}
+
+	startIndex := (pageNum - 1) * pageSize
+	endIndex := startIndex + pageSize
+
+	if endIndex > l {
+		endIndex = l
+	}
+
+	return a[startIndex:endIndex], pageNum, pageSize, utils.SpreadDigit(totalPages)
+}
 
 func (a PhotoAlbums) Len() int { return len(a) }
 
@@ -68,10 +91,10 @@ func (p *Photo) ParseExifByPath(filePath string) {
 		p.ShotTime = t
 	}
 	if cam, err := x.Get(exif.Make); err == nil {
-		p.Camera = cam.String()
+		p.Camera = strings.Trim(cam.String(), "\"")
 	}
 	if camModel, err := x.Get(exif.Model); err == nil {
-		p.CameraModel = camModel.String()
+		p.CameraModel = strings.Trim(camModel.String(), "\"")
 	}
 	if exposure, err := x.Get(exif.ExposureTime); err == nil {
 		numerator, denominator, _ := exposure.Rat2(0)

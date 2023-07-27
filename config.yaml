@@ -5,7 +5,9 @@ coverHeight: 650
 #相册的目录地址，相对于当前执行文件
 photoAlbumPath: ./PhotoAlbum
 #网站名字
-siteName: XuSenLin 的摄影集
+siteName: SenLin 的摄影集
+
+author: SenLin
 # html 关键字 描述
 htmlKeywords: XuSenLin photoAlbum
 htmlDescription : XuSenLin photoAlbum Web

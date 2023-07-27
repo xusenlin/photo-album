@@ -1,0 +1,64 @@
+{{template "header" .}}
+
+
+<div class="photo-album-list">
+    <div style="display: flex;justify-content: flex-end">
+        <h1>{{ .Config.SiteName }}</h1>
+    </div>
+    {{ range .PhotoAlbumList }}
+    {{ $path := .Path }}
+    <div class="photo-album">
+        <h2>{{ .Title }}</h2>
+        <div class="photo-album-info">
+            <span>Author:{{ .Author }}</span>
+            <span>CreatedAt:{{ .CreatedAt.Format "2006-01-02" }}</span>
+            <span>Count:{{ .Count }}</span>
+            <p>{{ .Descriptions }}</p>
+        </div>
+        <div class="photos">
+            {{ range .Photos }}
+            <div class="photo-block">
+                <div class="block-head">
+                    <img class="photo" src="http://127.0.0.1:3001/photoAlbum/{{ $path }}/{{ .Name }}_COVER{{ .Format }}" alt="">
+                    <div class="photo-shadow" style="background: url('http://127.0.0.1:3001/photoAlbum/{{ $path }}/{{ .Name }}_COVER{{ .Format }}') 0% 0% / cover transparent"></div>
+                </div>
+                <div class="title-date">
+                    <h3>{{ .Name }}</h3>
+                    <span>{{.ShotTime.Format "2006-01-02 15:04"}}</span>
+                </div>
+                <div class="params">
+                    <div class="params-block left">
+                        <p>Size:{{.Size}}M</p>
+                        <p>Pixel:{{.Width}} * {{.Height}}</p>
+                        <p>Model:{{.CameraModel}}</p>
+                        <p>Camera:{{.Camera}}</p>
+                    </div>
+                    <div class="params-block">
+                        <p>ISO:{{.ISO}} </p>
+                        <p>Aperture:{{.Aperture}} </p>
+                        <p>FocalLength:{{.FocalLength}} </p>
+                        <p>ExposureTime:{{.ExposureTime}} </p>
+                    </div>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+    <hr>
+    {{end}}
+</div>
+
+<ul class="pagination">
+    {{ $pageNum := .PageNum}}
+    {{ $pageSize := .PageSize}}
+
+    {{ range $page  := .TotalPagesSlice  }}
+    <li
+            class="{{ if eq $page $pageNum }}active{{end}}"
+    >
+        <a  href="/{{$page}}/{{ $pageSize }}">{{ $page }}</a>
+    </li>
+    {{end}}
+</ul>
+
+{{template "footer" .}}

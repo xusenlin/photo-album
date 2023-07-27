@@ -17,30 +17,16 @@ import (
 	"sync"
 )
 
-func InitPhotoAlbum(root string) (*models.PhotoAlbums, *models.PhotoAlbumMap, error) {
-
-	var photoAlbumMap = make(models.PhotoAlbumMap)
+func InitPhotoAlbum(root string) (*models.PhotoAlbums, error) {
 
 	photoAlbums, err := readPhotoAlbum(root)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	sort.Sort(photoAlbums)
 
-	for i := len(photoAlbums) - 1; i >= 0; i-- {
-		//这里必须使用倒序的方式生成 PhotoAlbumMap,因为如果有相同的相册标题，
-		// 倒序会将最老的相册优先生成shortUrl，保证和之前的 shortUrl一样
-		photoAlbum := photoAlbums[i]
-		keyword := utils.GenerateShortUrl(photoAlbum.Title, func(url, keyword string) bool {
-			//保证 keyword 唯一
-			_, ok := photoAlbumMap[keyword]
-			return !ok
-		})
-		photoAlbums[i].ShortUrl = keyword
-		photoAlbumMap[keyword] = photoAlbum.Path
-	}
-	return &photoAlbums, &photoAlbumMap, nil
+	return &photoAlbums, nil
 }
 
 func readPhotoAlbum(absolutePath string) (models.PhotoAlbums, error) {
@@ -101,6 +87,7 @@ func parserPhotoAlbum(root, path string) models.PhotoAlbum {
 		return pa
 	}
 	pa.Path = models.PhotoAlbumPath(relPath)
+	pa.Count = len(pa.Photos)
 
 	return pa
 }
@@ -158,9 +145,9 @@ func parsePhotoData(dir string, file fs.FileInfo) models.Photo {
 
 	photo.Width = img.Bounds().Dx()
 	photo.Height = img.Bounds().Dy()
-	photo.Size = float64(file.Size()) / (1024 * 1024)
-	photo.Name = file.Name()
+	photo.Size = fmt.Sprintf("%.2f", float64(file.Size())/(1024*1024))
 	photo.Format = filepath.Ext(file.Name())
+	photo.Name = strings.TrimSuffix(file.Name(), photo.Format)
 
 	photo.ParseExifByPath(filePath)
 

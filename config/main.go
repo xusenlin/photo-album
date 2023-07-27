@@ -32,6 +32,7 @@ func New(path string) (*Config, error) {
 		fmt.Println(err)
 		return nil, err
 	}
+	systemConfig.AppName = "PhotoAlbum"
 	systemConfig.PhotoAlbumAbsolutePath = photoAlbumAbsolutePath
 
 	return &Config{userConfig, systemConfig}, nil
