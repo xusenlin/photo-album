@@ -2,13 +2,18 @@
 
 
 <div class="photo-album-list">
-    <div style="display: flex;justify-content: flex-end">
+    <div class="site-name">
+        <svg class="logo" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="200" height="200"><path d="M613.952 64a64 64 0 0 1 56.768 34.464L719.36 192H928a96 96 0 0 1 96 96v576a96 96 0 0 1-96 96H96a96 96 0 0 1-96-96V288a96 96 0 0 1 96-96h240.64l48.64-93.536A64 64 0 0 1 442.048 64h171.904zM512 288a288 288 0 1 0 0 576 288 288 0 0 0 0-576z m0 96a192 192 0 1 1 0 384 192 192 0 0 1 0-384z"></path><path d="M192 96h32a64 64 0 0 1 64 64H128a64 64 0 0 1 64-64z"></path></svg>
         <h1>{{ .Config.SiteName }}</h1>
     </div>
     {{ range .PhotoAlbumList }}
     {{ $path := .Path }}
     <div class="photo-album">
-        <h2>{{ .Title }}</h2>
+        <div class="photo-album-title">
+            <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="200" height="200"><path d="M118.784 413.696v458.752h786.432V413.696H118.784z m-32.768-65.536h851.968c9.556992 0 17.408 3.072 23.552 9.216s9.216 13.995008 9.216 23.552v524.288c0 9.556992-3.072 17.408-9.216 23.552s-13.995008 9.216-23.552 9.216H86.016c-9.556992 0-17.408-3.072-23.552-9.216s-9.216-13.995008-9.216-23.552V380.928c0-9.556992 3.072-17.408 9.216-23.552s13.995008-9.216 23.552-9.216z m65.536-131.072h720.896v65.536H151.552v-65.536z m98.304-131.072h524.288v65.536H249.856V86.016z"></path></svg>
+            <h2>{{ .Title }}</h2>
+        </div>
+
         <div class="photo-album-info">
             <span>Author:{{ .Author }}</span>
             <span>CreatedAt:{{ .CreatedAt.Format "2006-01-02" }}</span>
@@ -27,18 +32,12 @@
                     <span>{{.ShotTime.Format "2006-01-02 15:04"}}</span>
                 </div>
                 <div class="params">
-                    <div class="params-block left">
-                        <p>Size:{{.Size}}M</p>
-                        <p>Pixel:{{.Width}} * {{.Height}}</p>
-                        <p>Model:{{.CameraModel}}</p>
-                        <p>Camera:{{.Camera}}</p>
-                    </div>
-                    <div class="params-block">
-                        <p>ISO:{{.ISO}} </p>
-                        <p>Aperture:{{.Aperture}} </p>
-                        <p>FocalLength:{{.FocalLength}} </p>
-                        <p>ExposureTime:{{.ExposureTime}} </p>
-                    </div>
+                    <p>Size:{{.Size}}M({{.Width}} * {{.Height}})</p>
+                    <p>ISO:{{.ISO}}</p>
+                    <p>Camera:{{.Camera}} - {{.CameraModel}}</p>
+                    <p>Aperture:{{.Aperture}}</p>
+                    <p>FocalLength:{{.FocalLength}}</p>
+                    <p>ExposureTime:{{.ExposureTime}} </p>
                 </div>
             </div>
             {{ end }}

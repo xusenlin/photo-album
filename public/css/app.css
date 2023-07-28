@@ -209,7 +209,42 @@ hr:after {
         padding: 16px;
     }
 }
+.site-name{
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    color: #222;
+    fill: #222;
+}
+.photo-album-title{
+    margin: 20px 0;
+    line-height: 2em;
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    color: #222;
+    fill: #222;
+}
 
+.site-name .logo{
+    margin-right: 10px;
+    width: 40px;
+    cursor: pointer;
+    height: 40px;
+}
+.photo-album-title .icon{
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+.site-name .logo:hover{
+    fill: var(--primary,#673ab7);
+}
+.site-name h1,.photo-album-title h2{
+    margin: 0;
+    padding: 0;
+}
 .photos {
     display: grid;
     grid-template-columns: repeat(auto-fill, 21vw);
@@ -281,6 +316,7 @@ hr:after {
 .photo-block .params {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .photo-block .title-date {
@@ -288,13 +324,17 @@ hr:after {
     line-height: 2em;
     justify-content: space-between;
     align-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 6px;
 }
 .photo-album-info span{
     color: #999;
     font-size: 14px;
     margin-right: 10px;
 }
+.photo-album-info p{
+    color: #454545;
+}
+
 .photo-block .title-date h3 {
     margin: 0;
     padding: 0;
@@ -311,17 +351,9 @@ hr:after {
     margin-bottom: 12px;
 }
 
-.photo-block .params .params-block {
-    width: 50%;
-}
-
-.photo-block .params .left p {
-    text-align: right;
-}
-
-.photo-block .params .params-block p {
+.photo-block .params  p {
     margin: 0;
-    padding: 0 6px;
+    padding: 0 6px 0 0;
     font-size: 12px;
 }
 
