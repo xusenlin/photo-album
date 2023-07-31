@@ -46,14 +46,25 @@ type PhotoAlbum struct {
 
 type PhotoAlbums []PhotoAlbum
 
-func (a PhotoAlbums) Pagination(pageNum, pageSize int) (PhotoAlbums, int, int, []int) {
+type Pagination struct {
+	PagesSlice []int
+	Pages      int
+	PageNum    int
+	PageSize   int
+}
+
+func (a PhotoAlbums) Pagination(pageNum, pageSize int) (PhotoAlbums, Pagination) {
+
+	var p Pagination
 
 	l := len(a)
-	totalPages := int(math.Ceil(float64(l) / float64(pageSize)))
+	p.Pages = int(math.Ceil(float64(l) / float64(pageSize)))
 
-	if pageNum > totalPages {
-		pageNum = totalPages
+	if pageNum > p.Pages {
+		pageNum = p.Pages
 	}
+	p.PageNum = pageNum
+	p.PageSize = pageSize
 
 	startIndex := (pageNum - 1) * pageSize
 	endIndex := startIndex + pageSize
@@ -61,8 +72,9 @@ func (a PhotoAlbums) Pagination(pageNum, pageSize int) (PhotoAlbums, int, int, [
 	if endIndex > l {
 		endIndex = l
 	}
+	p.PagesSlice = utils.SpreadDigit(p.Pages)
 
-	return a[startIndex:endIndex], pageNum, pageSize, utils.SpreadDigit(totalPages)
+	return a[startIndex:endIndex], p
 }
 
 func (a PhotoAlbums) Len() int { return len(a) }

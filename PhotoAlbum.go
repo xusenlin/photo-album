@@ -29,7 +29,7 @@ func main() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
-	app.Static("/photoAlbum", global.Config.PhotoAlbumAbsolutePath)
+
 	app.Static("/public", "./public")
 
 	app.Get("/:pageNum?/:pageSize?", func(c *fiber.Ctx) error {
@@ -43,13 +43,11 @@ func main() {
 			pageSize = 2
 		}
 
-		list, page, pageSize, totalPagesSlice := global.PhotoAlbumList.Pagination(pageNum, pageSize)
+		photoAlbumList, p := global.PhotoAlbumList.Pagination(pageNum, pageSize)
 		return c.Render("index", fiber.Map{
-			"Config":          global.Config,
-			"PhotoAlbumList":  list,
-			"TotalPagesSlice": totalPagesSlice,
-			"PageNum":         page,
-			"PageSize":        pageSize,
+			"Config":         global.Config,
+			"PhotoAlbumList": photoAlbumList,
+			"Pagination":     p,
 		})
 	})
 

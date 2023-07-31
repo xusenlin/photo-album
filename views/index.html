@@ -23,10 +23,14 @@
         <div class="photos">
             {{ range .Photos }}
             <div class="photo-block">
+                {{with .Error}}
+                <p>Error occurred: {{.}}</p>
+                {{else}}
                 <div class="block-head">
-                    <img class="photo" src="http://127.0.0.1:3001/photoAlbum/{{ $path }}/{{ .Name }}_COVER{{ .Format }}" alt="">
-                    <div class="photo-shadow" style="background: url('http://127.0.0.1:3001/photoAlbum/{{ $path }}/{{ .Name }}_COVER{{ .Format }}') 0% 0% / cover transparent"></div>
+                    <img class="photo" src="/public/cover/{{ $path }}/{{ .Name }}{{ .Format }}" alt="">
+                    <div class="photo-shadow" style="background: url('/public/cover/{{ $path }}/{{ .Name }}{{ .Format }}') 0% 0% / cover transparent"></div>
                 </div>
+                {{end}}
                 <div class="title-date">
                     <h3>{{ .Name }}</h3>
                     <span>{{.ShotTime.Format "2006-01-02 15:04"}}</span>
@@ -48,10 +52,10 @@
 </div>
 
 <ul class="pagination">
-    {{ $pageNum := .PageNum}}
-    {{ $pageSize := .PageSize}}
+    {{ $pageNum := .Pagination.PageNum}}
+    {{ $pageSize := .Pagination.PageSize}}
 
-    {{ range $page  := .TotalPagesSlice  }}
+    {{ range $page  := .Pagination.PagesSlice  }}
     <li
             class="{{ if eq $page $pageNum }}active{{end}}"
     >

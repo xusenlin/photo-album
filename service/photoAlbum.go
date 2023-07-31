@@ -101,12 +101,8 @@ func parserPhotos(dir string) (models.Photos, error) {
 	}
 	for _, file := range files {
 		if !file.IsDir() {
-			if strings.Contains(file.Name(), "_COVER") {
-				continue
-			}
 			ext := strings.ToLower(filepath.Ext(file.Name()))
 			if ext == ".jpg" || ext == ".jpeg" {
-				// 解析图片元数据
 				photo := parsePhotoData(dir, file)
 				photos = append(photos, photo)
 			}
@@ -135,8 +131,11 @@ func parsePhotoData(dir string, file fs.FileInfo) models.Photo {
 	photo := models.Photo{}
 
 	filePath := filepath.Join(dir, file.Name())
-	coverPath := buildCoverPath(filePath)
-
+	coverPath, err := buildCoverPath(filePath)
+	if err != nil {
+		photo.Error = err
+		return photo
+	}
 	img, err := imaging.Open(filePath)
 	if err != nil {
 		photo.Error = err
@@ -161,6 +160,7 @@ func parsePhotoData(dir string, file fs.FileInfo) models.Photo {
 }
 
 func buildPhotoCover(img image.Image, coverPath string) error {
+
 	if utils.IsFile(coverPath) { //有封面了
 		img, err := imaging.Open(coverPath)
 		if err != nil {
@@ -170,6 +170,14 @@ func buildPhotoCover(img image.Image, coverPath string) error {
 			return nil
 		}
 	}
+	coverDir := filepath.Dir(coverPath)
+	if !utils.IsDir(coverDir) {
+		err := utils.MakeDir(coverDir)
+		if err != nil {
+			return err
+		}
+	}
+
 	cover := imaging.Resize(img, 0, global.Config.CoverHeight, imaging.NearestNeighbor)
 	err := imaging.Save(cover, coverPath)
 	if err != nil {
@@ -179,11 +187,11 @@ func buildPhotoCover(img image.Image, coverPath string) error {
 	return nil
 }
 
-func buildCoverPath(path string) string {
-	dir := filepath.Dir(path)
-	fileName := filepath.Base(path)
-	fileExt := filepath.Ext(fileName)
-	fileNameWithoutExt := strings.TrimSuffix(fileName, fileExt)
-	coverFileName := fileNameWithoutExt + "_COVER" + fileExt
-	return filepath.Join(dir, coverFileName)
+func buildCoverPath(path string) (string, error) {
+	rel, err := filepath.Rel(global.Config.PhotoAlbumAbsolutePath, path)
+
+	if err != nil {
+		return " ", err
+	}
+	return filepath.Join(global.Config.PhotoAlbumCoverAbsolutePath, rel), nil
 }
