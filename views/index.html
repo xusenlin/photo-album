@@ -3,8 +3,13 @@
 
 <div class="photo-album-list">
     <div class="site-name">
-        <svg class="logo" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="200" height="200"><path d="M613.952 64a64 64 0 0 1 56.768 34.464L719.36 192H928a96 96 0 0 1 96 96v576a96 96 0 0 1-96 96H96a96 96 0 0 1-96-96V288a96 96 0 0 1 96-96h240.64l48.64-93.536A64 64 0 0 1 442.048 64h171.904zM512 288a288 288 0 1 0 0 576 288 288 0 0 0 0-576z m0 96a192 192 0 1 1 0 384 192 192 0 0 1 0-384z"></path><path d="M192 96h32a64 64 0 0 1 64 64H128a64 64 0 0 1 64-64z"></path></svg>
-        <h1>{{ .Config.SiteName }}</h1>
+        <div style="display: flex">
+            <svg class="logo" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"  width="200" height="200"><path d="M613.952 64a64 64 0 0 1 56.768 34.464L719.36 192H928a96 96 0 0 1 96 96v576a96 96 0 0 1-96 96H96a96 96 0 0 1-96-96V288a96 96 0 0 1 96-96h240.64l48.64-93.536A64 64 0 0 1 442.048 64h171.904zM512 288a288 288 0 1 0 0 576 288 288 0 0 0 0-576z m0 96a192 192 0 1 1 0 384 192 192 0 0 1 0-384z"></path><path d="M192 96h32a64 64 0 0 1 64 64H128a64 64 0 0 1 64-64z"></path></svg>
+            <h1>{{ .Config.SiteName }}</h1>
+        </div>
+        <div class="site-sub-title">
+            除了看见照片，不然我已经回忆不了当时的情景，<br>
+            和音符一样，只有某个旋律，才能唤醒沉寂的回忆，让时间的细节再次绽放。</div>
     </div>
     {{ range .PhotoAlbumList }}
     {{ $path := .Path }}

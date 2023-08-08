@@ -212,10 +212,16 @@ hr:after {
 .site-name{
     margin-bottom: 40px;
     display: flex;
-    justify-content: flex-end;
-    align-content: center;
+    flex-direction: column;
+    align-items: flex-end;
     color: #222;
     fill: #222;
+}
+.site-name .site-sub-title{
+    font-size: 13px;
+    margin-top: 12px;
+    text-align: right;
+    color: #999;
 }
 .photo-album-title{
     margin: 20px 0;
