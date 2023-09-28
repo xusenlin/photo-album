@@ -6,3 +6,6 @@ A web album compilation designed specifically for photographers. Specify a direc
 
 ![demo](./demo.png)
 ![demo2](./demo2.png)
+
+## 使用
+这是一个根据本地文件夹（PhotoAlbums）和配置自动生成相册的软件，你只需要在文件夹下规划好你的子相册目录，并同时添加相应的配置，运行软件即可呈现web相册。
